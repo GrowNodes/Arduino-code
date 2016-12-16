@@ -1,5 +1,4 @@
 /*
-  ElCheapo Arduino EC-PPM measurments
  
   This scrip uses a common USA two prong plug and a 47Kohm Resistor to measure the EC/PPM of a Aquaponics/Hydroponics Sytem.
   You could modift this code to Measure other liquids if you change the resitor and values at the top of the code.
