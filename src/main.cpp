@@ -1,9 +1,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <PJON.h>
+PJON<SoftwareBitBang> MCUBus(45);
 
-// <Strategy name> bus(selected device id)
-PJON<SoftwareBitBang> bus(45);
 
 constexpr unsigned int str2int(const char* str, int h = 0)
 {
@@ -15,11 +14,11 @@ constexpr unsigned int str2int(const char* str, int h = 0)
 void set_grow_light(bool on) {
   if (on) {
     Serial.println("turn grow light on");
-    bus.reply("ok", 2);
+    MCUBus.reply("ok", 2);
     return;
   }
   Serial.println("turn grow light off");
-  bus.reply("ok", 2);
+  MCUBus.reply("ok", 2);
 }
 
 void payload_router(const char* payload) {
@@ -37,14 +36,14 @@ void payload_router(const char* payload) {
     case str2int("air_temp_f"): {
       String reply_str = "air_temp_f=";
       reply_str += (float)random(6500, 9900)*0.01;
-      bus.reply(reply_str.c_str(), reply_str.length());
+      MCUBus.reply(reply_str.c_str(), reply_str.length());
       break;
     }
 
     case str2int("water_level"): {
       String reply_str = "water_level=";
       reply_str += (float)random(100, 300)*0.01;
-      bus.reply(reply_str.c_str(), reply_str.length());
+      MCUBus.reply(reply_str.c_str(), reply_str.length());
       break;
     }
   }
@@ -66,9 +65,9 @@ void receiver_function(uint8_t *payload, uint16_t length, const PacketInfo &pack
 
 void setup() {
 
-  bus.strategy.set_pin(13);
-  bus.begin();
-  bus.set_receiver(receiver_function);
+  MCUBus.strategy.set_pin(13);
+  MCUBus.begin();
+  MCUBus.set_receiver(receiver_function);
 
   Serial.begin(9600);
   Serial.println("Ready to receive");
@@ -77,6 +76,6 @@ void setup() {
 
 
 void loop() {
-  bus.update();
-  bus.receive(1000);
+  MCUBus.update();
+  MCUBus.receive(1000);
 };
