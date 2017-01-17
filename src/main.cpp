@@ -1,7 +1,22 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <PJON.h>
-PJON<SoftwareBitBang> MCUBus(45);
+#include "DHT.h"
+
+#define GROW_LIGHT_PIN 8
+#define MCU_BUS_PIN 4
+
+#define DHTPIN A3     // what digital pin we're connected to
+
+// Uncomment whatever type you're using!
+// #define DHTTYPE DHT11   // DHT 11
+#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
+
+DHT dht(DHTPIN, DHTTYPE);
+PJON<SoftwareBitBang> MCUBus(45);   // device ID 45
+float air_temp_f = 0;
+unsigned long tempf_last_read = 0;
+
 
 
 constexpr unsigned int str2int(const char* str, int h = 0)
@@ -14,10 +29,12 @@ constexpr unsigned int str2int(const char* str, int h = 0)
 void set_grow_light(bool on) {
   if (on) {
     Serial.println("turn grow light on");
+    digitalWrite(GROW_LIGHT_PIN, HIGH);
     MCUBus.reply("ok", 2);
     return;
   }
   Serial.println("turn grow light off");
+  digitalWrite(GROW_LIGHT_PIN, LOW);
   MCUBus.reply("ok", 2);
 }
 
@@ -35,7 +52,7 @@ void payload_router(const char* payload) {
 
     case str2int("air_temp_f"): {
       String reply_str = "air_temp_f=";
-      reply_str += (float)random(6500, 9900)*0.01;
+      reply_str += air_temp_f;
       MCUBus.reply(reply_str.c_str(), reply_str.length());
       break;
     }
@@ -64,10 +81,15 @@ void receiver_function(uint8_t *payload, uint16_t length, const PacketInfo &pack
 }
 
 void setup() {
+  // pinMode(GROW_LIGHT_PIN, OUTPUT);
 
-  MCUBus.strategy.set_pin(13);
+
+  MCUBus.strategy.set_pin(MCU_BUS_PIN);
   MCUBus.begin();
   MCUBus.set_receiver(receiver_function);
+
+  dht.begin();
+
 
   Serial.begin(9600);
   Serial.println("Ready to receive");
@@ -78,4 +100,10 @@ void setup() {
 void loop() {
   MCUBus.update();
   MCUBus.receive(1000);
+  if (millis() - tempf_last_read >= 2000) {
+    tempf_last_read = millis();
+    Serial.print("air_temp_f: ");
+    Serial.println(air_temp_f);
+    air_temp_f = dht.readTemperature(true);
+  }
 };
