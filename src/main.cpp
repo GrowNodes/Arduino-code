@@ -52,7 +52,9 @@ void payload_router(const char* payload) {
 
     case str2int("air_temp_f"): {
       String reply_str = "air_temp_f=";
-      reply_str += (float)random(6500, 9900)*0.01;
+      // reply_str += (float)random(6500, 9900)*0.01;
+      reply_str += (float)air_temp_f;
+      Serial.println(reply_str);
       MCUBus.reply(reply_str.c_str(), reply_str.length());
       break;
     }
@@ -61,6 +63,7 @@ void payload_router(const char* payload) {
       String reply_str = "water_level=";
       reply_str += (float)random(100, 300)*0.01;
       MCUBus.reply(reply_str.c_str(), reply_str.length());
+      Serial.println(reply_str);
       break;
     }
   }
