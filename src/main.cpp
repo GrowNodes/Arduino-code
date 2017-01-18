@@ -2,6 +2,7 @@
 #include <SPI.h>
 #include <PJON.h>
 #include <dht.h>
+
 // #define GROW_LIGHT_PIN 8
 #define MCU_BUS_PIN 12
 #define ESP_BUS_ID 44
@@ -42,13 +43,18 @@ void payloadRouter(const char* payload_str) {
     // Also fuck arduino's sprintf doesn't support floats
 
     float tempf = isnan(air_temp_f) ? 0.0 : air_temp_f;
-    char myConcatenation[20];
+    // air_temp_f=-999.99;
 
-    sprintf(myConcatenation,"air_temp_f=%i.0", (int)round(tempf));
-    Serial.print(F("Replying with: "));
-    Serial.println(myConcatenation);
+    char air_temp_f_str_buffer[6+1];   // 102.76 + null terminator
+    dtostrf(tempf, 4, 2, air_temp_f_str_buffer);
+    char reply_str[25];
+    sprintf(reply_str,"air_temp_f=%s", air_temp_f_str_buffer);
 
-    MCUBus.reply(myConcatenation, 13);
+    Serial.print(F("Replying with "));
+    Serial.print(strlen(reply_str));
+    Serial.print(F(" bytes: "));
+    Serial.println(reply_str);
+    MCUBus.reply(reply_str, strlen(reply_str));
     return;
   }
 }
@@ -60,7 +66,7 @@ void onBusPacket(uint8_t *payload, uint16_t length, const PacketInfo &packet_inf
   }
   payload_str[length] = '\0'; // null terminate the string
 
-  Serial.print(F("Received "));
+  Serial.print(F("\nReceived "));
   Serial.print(length);
   Serial.print(F(" bytes: "));
   Serial.println(payload_str);
@@ -70,7 +76,7 @@ void onBusPacket(uint8_t *payload, uint16_t length, const PacketInfo &packet_inf
 
 void setup() {
   Serial.begin(74880);
-  Serial.println(F("Ready to receive"));
+  Serial.println(F("Ready to receive\n"));
 //   // pinMode(GROW_LIGHT_PIN, OUTPUT);
 //
 //
@@ -84,6 +90,7 @@ void setup() {
 
 void readTemp()
 {
+  air_temp_f = 0.0; // Set to safe value
   // READ DATA
   int chk = DHT.read11(DHT11_PIN);
   switch (chk)
@@ -91,20 +98,20 @@ void readTemp()
     case DHTLIB_OK:
 		break;
     case DHTLIB_ERROR_CHECKSUM:
-		Serial.print(F("DHT11 Checksum error,\t"));
-		break;
+		Serial.println(F("DHT11 Checksum error"));
+    return;
     case DHTLIB_ERROR_TIMEOUT:
-		Serial.print(F("DHT11 Time out error,\t"));
-		break;
+		Serial.println(F("DHT11 Time out error"));
+		return;
     default:
-		Serial.print(F("DHT11 Unknown error,\t"));
-		break;
+		Serial.println(F("DHT11 Unknown error"));
+		return;
   }
   // DISPLAY DATA
   // Serial.print(DHT.humidity, 1);
   // Serial.print(",\t");
   // Serial.println(DHT.temperature, 1);
-  air_temp_f = DHT.temperature;
+  air_temp_f = DHT.temperature *9/5 +32;
 }
 
 
@@ -119,8 +126,7 @@ void loop() {
   if (millis() - tempf_last_read >= 2000) {
     tempf_last_read = millis();
     readTemp();
-    Serial.print(F("air_temp_f: "));
-    Serial.println(air_temp_f);
-    // air_temp_f = dht.readTemperature(true);
+    // Serial.print(F("air_temp_f: "));
+    // Serial.println(air_temp_f);
   }
 };
