@@ -3,12 +3,12 @@
 #include <PJON.h>
 #include <dht.h>
 
-// #define GROW_LIGHT_PIN 8
-#define MCU_BUS_PIN 12
+#define GROW_LIGHT_PIN 8
+#define MCU_BUS_PIN 9
 #define ESP_BUS_ID 44
 
 dht DHT;
-#define DHT11_PIN 5
+#define DHT11_PIN A3
 
 
 
@@ -22,18 +22,20 @@ void payloadRouter(const char* payload_str) {
     char reply_str[] = "water_level=1.69";
     Serial.print(F("Responding with: "));
     Serial.println(reply_str);
-    MCUBus.reply(reply_str, sizeof(reply_str));
+    MCUBus.reply(reply_str, sizeof(reply_str)-1);
     return;
   }
 
   if (strcmp_P(payload_str, (PGM_P)F("grow_light_on")) == 0) {
     Serial.println(F("turn grow light on"));
+    digitalWrite(GROW_LIGHT_PIN, HIGH);
     MCUBus.reply("ok", 2);
     return;
   }
 
   if (strcmp_P(payload_str, (PGM_P)F("grow_light_off")) == 0) {
     Serial.println(F("turn grow light off"));
+    digitalWrite(GROW_LIGHT_PIN, HIGH);
     MCUBus.reply("ok", 2);
     return;
   }
@@ -77,7 +79,7 @@ void onBusPacket(uint8_t *payload, uint16_t length, const PacketInfo &packet_inf
 void setup() {
   Serial.begin(74880);
   Serial.println(F("Ready to receive\n"));
-//   // pinMode(GROW_LIGHT_PIN, OUTPUT);
+  pinMode(GROW_LIGHT_PIN, OUTPUT);
 //
 //
   MCUBus.strategy.set_pin(MCU_BUS_PIN);
