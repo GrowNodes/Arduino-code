@@ -35,7 +35,7 @@ void payloadRouter(const char* payload_str) {
 
   if (strcmp_P(payload_str, (PGM_P)F("grow_light_off")) == 0) {
     Serial.println(F("turn grow light off"));
-    digitalWrite(GROW_LIGHT_PIN, HIGH);
+    digitalWrite(GROW_LIGHT_PIN, LOW);
     MCUBus.reply("ok", 2);
     return;
   }
