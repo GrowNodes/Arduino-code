@@ -8,7 +8,7 @@
 #define ESP_BUS_ID 44
 
 dht DHT;
-#define DHT11_PIN A3
+#define DHT_PIN A3
 
 
 
@@ -94,19 +94,19 @@ void readTemp()
 {
   air_temp_f = 0.0; // Set to safe value
   // READ DATA
-  int chk = DHT.read11(DHT11_PIN);
+  int chk = DHT.read22(DHT_PIN);
   switch (chk)
   {
     case DHTLIB_OK:
 		break;
     case DHTLIB_ERROR_CHECKSUM:
-		Serial.println(F("DHT11 Checksum error"));
+		Serial.println(F("DHT Checksum error"));
     return;
     case DHTLIB_ERROR_TIMEOUT:
-		Serial.println(F("DHT11 Time out error"));
+		Serial.println(F("DHT Time out error"));
 		return;
     default:
-		Serial.println(F("DHT11 Unknown error"));
+		Serial.println(F("DHT Unknown error"));
 		return;
   }
   // DISPLAY DATA
