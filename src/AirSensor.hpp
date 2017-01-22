@@ -1,4 +1,6 @@
+#include <MCUBus.hpp>
 #include <dht.h>
+
 #define DHT_PIN A3
 
 class AirSensor {
@@ -12,8 +14,9 @@ public:
   AirSensor();
 
   void loop();
-  float getAirTemp();
+  void send();
 
 private:
   void readTemp();
+  float getAirTemp();
 };

@@ -1,6 +1,5 @@
 #include <Arduino.h>
-#include <SPI.h>
-#include <PJON.h>
+#include <MCUBus.hpp>
 #include <LiquidCrystal.h>
 #include <AirSensor.hpp>
 
@@ -51,16 +50,7 @@ void payloadRouter(const char* payload_str) {
   }
 
   if (strcmp_P(payload_str, (PGM_P)F("air_temp")) == 0) {
-    char air_temp_str_buffer[6+1];   // 102.76 + null terminator
-    dtostrf(air_sensor.getAirTemp(), 4, 2, air_temp_str_buffer);
-    char reply_str[25];
-    sprintf(reply_str,"air_temp=%s", air_temp_str_buffer);
-
-    Serial.print(F("Replying with "));
-    Serial.print(strlen(reply_str));
-    Serial.print(F(" bytes: "));
-    Serial.println(reply_str);
-    MCUBus.reply(reply_str, strlen(reply_str));
+    air_sensor.send();
     return;
   }
 }
