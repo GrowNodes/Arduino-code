@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <PJON.h>
-#include <AirSensor.cpp>
 #include <LiquidCrystal.h>
+#include <AirSensor.hpp>
 
 #define WATER_PUMP_PIN 5
 #define GROW_LIGHT_PIN 8
@@ -51,11 +51,6 @@ void payloadRouter(const char* payload_str) {
   }
 
   if (strcmp_P(payload_str, (PGM_P)F("air_temp")) == 0) {
-    // For some reason I couldn't get String to work
-    // Also fuck arduino's sprintf doesn't support floats
-
-    // air_temp=-999.99;
-
     char air_temp_str_buffer[6+1];   // 102.76 + null terminator
     dtostrf(air_sensor.getAirTemp(), 4, 2, air_temp_str_buffer);
     char reply_str[25];
