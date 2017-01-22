@@ -1,13 +1,13 @@
 #include <MCUBus.hpp>
 #include <dht.h>
-
-#define DHT_PIN A3
+#include <constants.h>
 
 class AirSensor {
 private:
   dht DHT;
   float air_temp;
-  unsigned long tempf_last_read;
+  float air_humidity;
+  unsigned long air_sensor_last_read;
 
 
 public:
@@ -17,6 +17,7 @@ public:
   void send();
 
 private:
-  void readTemp();
+  void readSensor();
   float getAirTemp();
+  float getAirHumidity();
 };

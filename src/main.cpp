@@ -2,14 +2,11 @@
 #include <MCUBus.hpp>
 #include <LiquidCrystal.h>
 #include <AirSensor.hpp>
+#include <constants.h>
 
-#define WATER_PUMP_PIN 5
-#define GROW_LIGHT_PIN 8
-#define MCU_BUS_PIN 9
-#define ESP_BUS_ID 44
 
 AirSensor air_sensor;
-PJON<SoftwareBitBang> MCUBus(45);   // device ID 45
+PJON<SoftwareBitBang> MCUBus(THIS_BUS_ID);   // device ID 45
 
 void payloadRouter(const char* payload_str) {
 
@@ -49,7 +46,7 @@ void payloadRouter(const char* payload_str) {
     return;
   }
 
-  if (strcmp_P(payload_str, (PGM_P)F("air_temp")) == 0) {
+  if (strcmp_P(payload_str, (PGM_P)F("air_sensor")) == 0) {
     air_sensor.send();
     return;
   }
