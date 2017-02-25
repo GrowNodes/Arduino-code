@@ -20,28 +20,28 @@ void payloadRouter(const char* payload_str) {
 
   if (strcmp_P(payload_str, (PGM_P)F("water_pump=on")) == 0) {
     Serial.println(F("turn water pump on"));
-    digitalWrite(WATER_PUMP_PIN, HIGH);
+    digitalWrite(WATER_PUMP_PIN, LOW);
     MCUBus.reply("ok", 2);
     return;
   }
 
   if (strcmp_P(payload_str, (PGM_P)F("water_pump=off")) == 0) {
     Serial.println(F("turn water pump off"));
-    digitalWrite(WATER_PUMP_PIN, LOW);
+    digitalWrite(WATER_PUMP_PIN, HIGH);
     MCUBus.reply("ok", 2);
     return;
   }
 
   if (strcmp_P(payload_str, (PGM_P)F("grow_light=on")) == 0) {
     Serial.println(F("turn grow light on"));
-    digitalWrite(GROW_LIGHT_PIN, HIGH);
+    digitalWrite(GROW_LIGHT_PIN, LOW);
     MCUBus.reply("ok", 2);
     return;
   }
 
   if (strcmp_P(payload_str, (PGM_P)F("grow_light=off")) == 0) {
     Serial.println(F("turn grow light off"));
-    digitalWrite(GROW_LIGHT_PIN, LOW);
+    digitalWrite(GROW_LIGHT_PIN, HIGH);
     MCUBus.reply("ok", 2);
     return;
   }
