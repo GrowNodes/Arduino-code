@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <MCUBus.hpp>
-#include <LiquidCrystal.h>
 #include <AirSensor.hpp>
 #include <constants.h>
 
@@ -67,22 +66,12 @@ void onBusPacket(uint8_t *payload, uint16_t length, const PacketInfo &packet_inf
   payloadRouter(payload_str);
 }
 
-//                RS, E,  D4,D5,D6,D7
-LiquidCrystal lcd(12, 13, 4, 7, 3, 2);
-
 
 void setup() {
   Serial.begin(74880);
   Serial.println(F("Ready to receive\n"));
   pinMode(GROW_LIGHT_PIN, OUTPUT);
-
-
-  lcd.begin(16, 2);
-  lcd.print("Start");
-  lcd.setCursor(0, 1);
-  // lcd.print("pHRaw");
-
-
+  pinMode(WATER_PUMP_PIN, OUTPUT);
 
   MCUBus.strategy.set_pin(MCU_BUS_PIN);
   MCUBus.begin();
