@@ -1,31 +1,25 @@
-#include <Arduino.h>
-#include <Wire.h>
-#include <I2C_Anything.h>
-
-
-
-#define I2C_BUS_ID 45
-// #define WATER_PUMP_PIN 5
-#define GROW_LIGHT_PIN 13
-#define AIR_SENSOR_PIN D2
-#define PELTIER_PIN 9
-
+#include <main.h>
+byte selectedId;
+struct AirSensorData air_sensor_data;
 
 void send() {
-  I2C_writeAnything(1234.12);
+  switch (selectedId) {
+    case AIR_SENSOR:
+      // TODO send air_sensor_data over I2C
+      break;
+  }
 }
 
 
 void receive(int howManyBytes) {
-  byte selectedDevice = Wire.read(); // first byte of the transmission is the device selector
+  selectedId = Wire.read(); // first byte of the transmission is the selector
 
-  switch (selectedDevice) {
-    case PELTIER_PIN:
-      analogWrite(PELTIER_PIN, Wire.read()); // pwm
+  switch (selectedId) {
+    case PELTIER:
+      analogWrite(PELTIER, Wire.read()); // pwm
       break;
-    case GROW_LIGHT_PIN:
-      bool newState = Wire.read();    // receive byte as boolean
-      digitalWrite(GROW_LIGHT_PIN, newState);
+    case GROW_LIGHT:
+      digitalWrite(GROW_LIGHT, (bool)Wire.read());
       break;
   }
 
@@ -33,14 +27,23 @@ void receive(int howManyBytes) {
 
 
 void setup(/* arguments */) {
-  pinMode(PELTIER_PIN, OUTPUT);
-  pinMode(GROW_LIGHT_PIN, OUTPUT);
-  Wire.begin(I2C_BUS_ID);                // join i2c bus with address #8
+  pinMode(PELTIER, OUTPUT);
+  pinMode(GROW_LIGHT, OUTPUT);
+  Wire.begin(I2C_BUS_ID);
   Wire.onReceive(receive); // master wrtier slave reader
   Wire.onRequest(send); // master reader slave writer
+
+  // air_sensor_data.temperature = TODO;
+  // air_sensor_data.humidity = TODO;
+  air_sensor_data.last_read = millis();
 
   Serial.begin(74880);
 }
 
 void loop() {
+  if (millis() - air_sensor_data.last_read > 2000) {
+    // air_sensor_data.temperature = TODO;
+    // air_sensor_data.humidity = TODO;
+    air_sensor_data.last_read = millis();
+  }
 }
