@@ -1,9 +1,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-// environment(board) vars/constants
-// TODO refactor to git submodule
-
+// start environment defines/types
+// TODO refactor to git submodule for ESP
 #define I2C_BUS_ID 45
 
 // Pin assignments
@@ -17,3 +16,4 @@ struct AirSensorData {
   float humidity;
   unsigned long last_read;
 };
+// end environment defines/types
