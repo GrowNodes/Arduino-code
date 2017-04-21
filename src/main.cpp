@@ -1,6 +1,7 @@
 #include <main.h>
-byte selectedId;
-struct AirSensorData air_sensor_data;
+
+volatile struct AirSensorData air_sensor_data;
+volatile byte selectedId;
 
 void send() {
   switch (selectedId) {
