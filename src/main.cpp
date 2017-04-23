@@ -1,7 +1,8 @@
 #include <main.h>
 
-volatile struct AirSensorData air_sensor_data;
-volatile byte selectedId;
+struct AirSensorData air_sensor_data;
+byte selectedId;
+byte lastSelectedId;
 
 void sendISR() {
   switch (selectedId) {
@@ -42,9 +43,14 @@ void setup(/* arguments */) {
 }
 
 void loop() {
-  if (millis() - air_sensor_data.last_read > 2000) {
-    // air_sensor_data.temperature = TODO;
-    // air_sensor_data.humidity = TODO;
-    air_sensor_data.last_read = millis();
+  if (selectedId != lastSelectedId) {
+    lastSelectedId = selectedId;
+    Serial.print("selectedId: ");
+    Serial.println(selectedId);
   }
+  // if (millis() - air_sensor_data.last_read > 2000) {
+  //   // air_sensor_data.temperature = TODO;
+  //   // air_sensor_data.humidity = TODO;
+  //   air_sensor_data.last_read = millis();
+  // }
 }
