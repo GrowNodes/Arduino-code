@@ -54,6 +54,9 @@ void receiveISR(int howManyBytes) {
     case GROW_LIGHT:
       digitalWrite(GROW_LIGHT, (bool)Wire.read());
       break;
+    case WATER_PUMP:
+      digitalWrite(WATER_PUMP, (bool)Wire.read());
+      break;
   }
 
 }
@@ -62,6 +65,8 @@ void receiveISR(int howManyBytes) {
 void setup(/* arguments */) {
   pinMode(PELTIER, OUTPUT);
   pinMode(GROW_LIGHT, OUTPUT);
+  pinMode(WATER_PUMP, OUTPUT);
+
   Wire.begin(I2C_BUS_ID);
   Wire.onReceive(receiveISR); // interrupt. master wrtier slave reader
   Wire.onRequest(sendISR); // interrupt. master reader slave writer
