@@ -48,6 +48,9 @@ void receiveISR(int howManyBytes) {
   selectedId = Wire.read(); // first byte of the transmission is the selector
 
   switch (selectedId) {
+    case PELTIER_FAN:
+      digitalWrite(PELTIER_FAN, Wire.read());
+      break;
     case PELTIER:
       analogWrite(PELTIER, Wire.read()); // pwm
       break;
