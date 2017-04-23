@@ -15,5 +15,6 @@ struct AirSensorData {
   float temperature;
   float humidity;
   unsigned long last_read;
+  bool last_read_success;
 };
 // end environment defines/types
