@@ -8,6 +8,34 @@ byte payload;
 
 dht DHT;
 
+
+// is alignment an issue?
+void struct_to_byte_2(byte *a) {
+    for (unsigned int i = 0; i < sizeof(air_sensor_data); i++) {
+        a[i] = *((byte *)(&air_sensor_data) + i);
+        //cout << "in array: " << i << ":" << a[i] << endl;
+    }
+}
+
+// // less robust? dependent on same architecture?
+// void struct_to_byte(char *a)
+// {
+//     memcpy(a, &air_sensor_data, sizeof(air_sensor_data));
+// }
+// void byte_to_struct(char *a)
+// {
+//     struct AirSensorData temp;
+//     memcpy(&temp, a, sizeof(temp));
+//     cout << "temperature:" << temp.temperature << endl;
+//     cout << "humidity:" << temp.humidity << endl;
+//     cout << "last_read:" << temp.last_read << endl;
+//     cout << "last_read_success:" << temp.last_read_success << endl;
+// }
+
+
+
+
+
 void readAirSensor() {
   int chk = DHT.read22(AIR_SENSOR);
   air_sensor_data.last_read = millis();
@@ -40,7 +68,10 @@ void readAirSensor() {
 void sendISR() {
   switch (selectedId) {
     case AIR_SENSOR:
-      // TODO send air_sensor_data over I2C
+      // send air_sensor_data over I2C
+      byte buf[sizeof(air_sensor_data)];
+      struct_to_byte_2(buf);
+      Wire.write(buf, sizeof buf);   // send response
       break;
   }
 }
@@ -73,7 +104,7 @@ void setup(/* arguments */) {
   pinMode(PELTIER_FAN, OUTPUT);
   pinMode(WATER_PUMP, OUTPUT);
 
-  Wire.begin(I2C_BUS_ID);
+  Wire.begin(HWC_I2C_ID);
   Wire.onReceive(receiveISR); // interrupt. master wrtier slave reader
   Wire.onRequest(sendISR); // interrupt. master reader slave writer
 
