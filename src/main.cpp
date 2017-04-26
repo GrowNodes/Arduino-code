@@ -4,7 +4,8 @@
 
 struct AirSensorData air_sensor_data;
 byte selectedId;
-byte lastSelectedId;
+byte payload;
+
 dht DHT;
 
 void readAirSensor() {
@@ -46,19 +47,20 @@ void sendISR() {
 
 void receiveISR(int howManyBytes) {
   selectedId = Wire.read(); // first byte of the transmission is the selector
+  payload = Wire.read();
 
   switch (selectedId) {
     case PELTIER_FAN:
-      digitalWrite(PELTIER_FAN, Wire.read());
+      digitalWrite(PELTIER_FAN, payload);
       break;
     case PELTIER:
-      analogWrite(PELTIER, Wire.read()); // pwm
+      analogWrite(PELTIER, payload); // pwm
       break;
     case GROW_LIGHT:
-      digitalWrite(GROW_LIGHT, (bool)Wire.read());
+      digitalWrite(GROW_LIGHT, (bool)payload);
       break;
     case WATER_PUMP:
-      digitalWrite(WATER_PUMP, (bool)Wire.read());
+      digitalWrite(WATER_PUMP, (bool)payload);
       break;
   }
 
@@ -66,28 +68,34 @@ void receiveISR(int howManyBytes) {
 
 
 void setup(/* arguments */) {
-  pinMode(PELTIER, OUTPUT);
   pinMode(GROW_LIGHT, OUTPUT);
+  pinMode(PELTIER, OUTPUT);
+  pinMode(PELTIER_FAN, OUTPUT);
   pinMode(WATER_PUMP, OUTPUT);
 
   Wire.begin(I2C_BUS_ID);
   Wire.onReceive(receiveISR); // interrupt. master wrtier slave reader
   Wire.onRequest(sendISR); // interrupt. master reader slave writer
 
-  readAirSensor();
+  // readAirSensor();
 
   Serial.begin(74880);
+  Serial.println("ready");
 }
 
 void loop() {
-  if (selectedId != lastSelectedId) {
-    lastSelectedId = selectedId;
+  if (selectedId && payload) {
     Serial.print("selectedId: ");
-    Serial.println(selectedId);
+    Serial.print(selectedId);
+    Serial.print(", payload: ");
+    Serial.println(payload);
+
+    selectedId = 0;
+    payload = 0;
   }
 
 
   if (millis() - air_sensor_data.last_read > 2000) {
-    readAirSensor();
+    // readAirSensor();
   }
 }
