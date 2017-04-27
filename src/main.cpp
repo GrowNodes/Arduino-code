@@ -37,6 +37,12 @@ void struct_to_byte_2(byte *a) {
 
 
 void readAirSensor() {
+  air_sensor_data.last_read = 1234;
+  air_sensor_data.last_read_success = true;
+  air_sensor_data.temperature = 74.4;
+  air_sensor_data.humidity = 50.0;
+  return;
+
   int chk = DHT.read22(AIR_SENSOR);
   air_sensor_data.last_read = millis();
   air_sensor_data.last_read_success = false;
@@ -69,9 +75,10 @@ void sendISR() {
   switch (selectedId) {
     case AIR_SENSOR:
       // send air_sensor_data over I2C
-      byte buf[sizeof(air_sensor_data)];
+      const int struct_size = 13;
+      byte buf[struct_size];
       struct_to_byte_2(buf);
-      Wire.write(buf, sizeof buf);   // send response
+      Wire.write(buf, struct_size);
       break;
   }
 }
@@ -108,7 +115,7 @@ void setup(/* arguments */) {
   Wire.onReceive(receiveISR); // interrupt. master wrtier slave reader
   Wire.onRequest(sendISR); // interrupt. master reader slave writer
 
-  // readAirSensor();
+  readAirSensor();
 
   Serial.begin(74880);
   Serial.println("ready");
@@ -127,6 +134,6 @@ void loop() {
 
 
   if (millis() - air_sensor_data.last_read > 2000) {
-    // readAirSensor();
+    readAirSensor();
   }
 }
