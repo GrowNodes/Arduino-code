@@ -37,15 +37,11 @@ void struct_to_byte_2(byte *a) {
 
 
 void readAirSensor() {
-  air_sensor_data.last_read = 1234;
-  air_sensor_data.last_read_success = true;
-  air_sensor_data.temperature = 74.4;
-  air_sensor_data.humidity = 50.0;
-  return;
-
   int chk = DHT.read22(AIR_SENSOR);
   air_sensor_data.last_read = millis();
   air_sensor_data.last_read_success = false;
+  air_sensor_data.temperature = 0.0;
+  air_sensor_data.humidity = 0.0;
 
   switch (chk) {
     case DHTLIB_OK:
