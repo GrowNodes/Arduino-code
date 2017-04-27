@@ -91,7 +91,7 @@ void receiveISR(int howManyBytes) {
       analogWrite(PELTIER, payload); // pwm
       break;
     case GROW_LIGHT:
-      digitalWrite(GROW_LIGHT, (bool)payload);
+      digitalWrite(GROW_LIGHT, !((bool)payload));
       break;
     case WATER_PUMP:
       digitalWrite(WATER_PUMP, (bool)payload);
@@ -103,6 +103,8 @@ void receiveISR(int howManyBytes) {
 
 void setup(/* arguments */) {
   pinMode(GROW_LIGHT, OUTPUT);
+  digitalWrite(GROW_LIGHT, HIGH); //inverse logic
+
   pinMode(PELTIER, OUTPUT);
   pinMode(PELTIER_FAN, OUTPUT);
   pinMode(WATER_PUMP, OUTPUT);
